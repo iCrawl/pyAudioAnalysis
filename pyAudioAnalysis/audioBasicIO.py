@@ -95,14 +95,14 @@ def read_audio_file(path):
     if extension in ['.aif', '.aiff']:
         sampling_rate, signal = read_aif(path)
     elif extension in [".mp3", ".wav", ".au", ".ogg"]:
-        sampling_rate, signal = read_audio_generic(path)
+        sampling_rate, signal, audiofile = read_audio_generic(path)
     else:
         print(f"Error: unknown file type {extension}")
 
     if signal.ndim == 2 and signal.shape[1] == 1:
         signal = signal.flatten()
 
-    return sampling_rate, signal
+    return sampling_rate, signal, audiofile
 
 
 def read_aif(path):
@@ -145,7 +145,7 @@ def read_audio_generic(path):
             signal = numpy.array(temp_signal).T
     except:
         print("Error: file not found or other I/O error. (DECODING FAILED)")
-    return sampling_rate, signal
+    return sampling_rate, signal, audiofile
 
 
 def stereo_to_mono(signal):
