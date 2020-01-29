@@ -1,13 +1,18 @@
 from __future__ import print_function
 import os
 import glob
-import aifc
+import subprocess
+import tempfile
 import eyed3
 import ntpath
 import shutil
 import numpy as np
-from pydub import AudioSegment
 from scipy.io import wavfile
+
+try:
+    import aifc
+except ModuleNotFoundError:
+    aifc = None
 
 def convert_dir_mp3_to_wav(audio_folder, sampling_rate, num_channels,
                            use_tags=False):
@@ -96,7 +101,7 @@ def read_audio_file(input_file):
         if extension in ['.aif', '.aiff']:
             sampling_rate, signal = read_aif(input_file)
         elif extension in ['.wav']:
-            sampling_rate, signal = wavfile.read(input_file) # from scipy.io
+            sampling_rate, signal = wavfile.read(input_file)  # from scipy.io
         elif extension in [".mp3", ".au", ".ogg"]:
             sampling_rate, signal = read_audio_generic(input_file)
         else:
@@ -116,6 +121,9 @@ def read_aif(path):
     """
     sampling_rate = -1
     signal = np.array([])
+    if aifc is None:
+        print("Error: aifc module is unavailable on this Python version.")
+        return sampling_rate, signal
     try:
         with aifc.open(path, 'r') as s:
             nframes = s.getnframes()
@@ -135,20 +143,24 @@ def read_audio_generic(input_file):
     sampling_rate = -1
     signal = np.array([])
     try:
-        audiofile = AudioSegment.from_file(input_file)
-        data = np.array([])
-        if audiofile.sample_width == 2:
-            data = np.fromstring(audiofile._data, np.int16)
-        elif audiofile.sample_width == 4:
-            data = np.fromstring(audiofile._data, np.int32)
-
-        if data.size > 0:
-            sampling_rate = audiofile.frame_rate
-            temp_signal = []
-            for chn in list(range(audiofile.channels)):
-                temp_signal.append(data[chn::audiofile.channels])
-            signal = np.array(temp_signal).T
-    except:
+        with tempfile.NamedTemporaryFile(suffix=".wav") as tmp_file:
+            subprocess.run(
+                [
+                    "ffmpeg",
+                    "-nostdin",
+                    "-y",
+                    "-loglevel",
+                    "error",
+                    "-i",
+                    input_file,
+                    tmp_file.name,
+                ],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            sampling_rate, signal = wavfile.read(tmp_file.name)
+    except Exception:
         print("Error: file not found or other I/O error. (DECODING FAILED)")
     return sampling_rate, signal
 

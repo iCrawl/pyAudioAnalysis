@@ -261,8 +261,9 @@ def evaluate_speaker_diarization(labels, labels_gt):
     contigency_matrix = np.zeros((unique_flags.shape[0],
                                   unique_flags_gt.shape[0]))
     for i in range(min_len):
-        contigency_matrix[int(np.nonzero(unique_flags == labels[i])[0]),
-                int(np.nonzero(unique_flags_gt == labels_gt[i])[0])] += 1.0
+        label_index = np.flatnonzero(unique_flags == labels[i])[0]
+        gt_index = np.flatnonzero(unique_flags_gt == labels_gt[i])[0]
+        contigency_matrix[label_index, gt_index] += 1.0
 
     columns, rows = contigency_matrix.shape
     row_sum = np.sum(contigency_matrix, axis=0)
@@ -941,7 +942,9 @@ def speaker_diarization(filename, n_speakers, mid_window=1.0, mid_step=0.1,
     cluster_centers = []
     
     for speakers in s_range:
-        k_means = sklearn.cluster.KMeans(n_clusters=speakers)
+        k_means = sklearn.cluster.KMeans(
+            n_clusters=speakers, n_init=10, random_state=0
+        )
         k_means.fit(mid_feats_norm)
         cls = k_means.labels_ 
         cluster_labels.append(cls)
@@ -1178,6 +1181,4 @@ def music_thumbnailing(signal, sampling_rate, short_window=1.0, short_step=0.5,
 
     return short_step * i1, short_step * i2, short_step * j1, short_step * j2, \
         sim_matrix
-
-
 

@@ -21,4 +21,16 @@ def test_mt_file_classification():
                                      "test_data/svm_rbf_sm", "svm_rbf", False, 
                                      "test_data/scottish.segments")
     assert accuracy > 0.95, "Segment-level classification accuracy is low"
+
+
+def test_evaluate_speaker_diarization_accepts_numpy_arrays():
+    labels = np.array([0, 0, 1, 1])
+    labels_gt = np.array([0, 0, 1, 1])
+
+    purity_cluster_m, purity_speaker_m = aS.evaluate_speaker_diarization(
+        labels, labels_gt
+    )
+
+    assert purity_cluster_m == 1.0
+    assert purity_speaker_m == 1.0
     

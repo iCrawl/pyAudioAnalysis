@@ -5,7 +5,7 @@ import sys
 from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 from scipy.signal import lfilter
-from scipy.fftpack.realtransforms import dct
+from scipy.fft import dct
 from tqdm import tqdm
 
 eps = sys.float_info.epsilon

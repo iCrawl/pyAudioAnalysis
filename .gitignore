@@ -2,3 +2,10 @@
 *.pyc
 *.npy
 .idea
+output/
+env/
+.env
+.venv/
+.tmp/
+*.egg-info/
+.worktrees/

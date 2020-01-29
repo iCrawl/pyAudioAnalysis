@@ -21,8 +21,11 @@ pyAudioAnalysis is a Python library covering a wide range of audio analysis task
 
 ## Installation
  * Clone the source of this library: `git clone https://github.com/tyiannak/pyAudioAnalysis.git`
- * Install dependencies: `pip install -r ./requirements.txt `
+ * Create and activate a virtual environment: `python3 -m venv .venv && source .venv/bin/activate`
+ * Install runtime dependencies: `pip install -r requirements.txt`
+ * Install development dependencies (optional, for tests): `pip install -r requirements-dev.txt`
  * Install using pip: `pip install -e .`
+ * Run the bundled smoke tests: `cd pytests && MPLBACKEND=Agg MPLCONFIGDIR=../.tmp/matplotlib pytest -q`
 
 ## An audio classification example
 > More examples and detailed tutorials can be found [at the wiki](https://github.com/tyiannak/pyAudioAnalysis/wiki)
@@ -67,4 +70,3 @@ For Matlab-related audio analysis material check  [this book](http://www.amazon.
 
 [Theodoros Giannakopoulos](https://tyiannak.github.io),
 Principal Researcher of Multimodal Machine Learning at the [Multimedia Analysis Group of the Computational Intelligence Lab (MagCIL)](https://labs-repos.iit.demokritos.gr/MagCIL/index.html) of the Institute of Informatics and Telecommunications, of the National Center for Scientific Research "Demokritos"
-
